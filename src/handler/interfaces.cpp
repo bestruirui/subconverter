@@ -152,7 +152,7 @@ std::string getRuleset(RESPONSE_CALLBACK_ARGS) {
         x.insert(0, "ruleset,");
     std::vector<RulesetContent> rca;
     RulesetConfigs confs = INIBinding::from<RulesetConfig>::from_ini(vArray);
-    refreshRulesets(confs, rca);
+    refreshRulesets(confs, rca, global.proxyRuleset);
     for (RulesetContent &x: rca) {
         std::string content = x.rule_content.get();
         output_content += convertRuleset(content, x.rule_type);
@@ -515,12 +515,13 @@ std::string subconverter(RESPONSE_CALLBACK_ARGS) {
             }
         }
     }
+    proxy = parseProxy(argConfigProxy);
     if (ext.enable_rule_generator && !ext.nodelist && !lSimpleSubscription) {
         if (lCustomRulesets != global.customRulesets)
-            refreshRulesets(lCustomRulesets, lRulesetContent);
+            refreshRulesets(lCustomRulesets, lRulesetContent ,proxy);
         else {
             if (global.updateRulesetOnRequest)
-                refreshRulesets(global.customRulesets, global.rulesetsContent);
+                refreshRulesets(global.customRulesets, global.rulesetsContent,proxy);
             lRulesetContent = global.rulesetsContent;
         }
     }

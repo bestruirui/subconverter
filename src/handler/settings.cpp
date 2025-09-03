@@ -244,13 +244,13 @@ void readRuleset(YAML::Node node, string_array &dest, bool scope_limit = true)
     importItems(dest, scope_limit);
 }
 
-void refreshRulesets(RulesetConfigs &ruleset_list, std::vector<RulesetContent> &ruleset_content_array)
+void refreshRulesets(RulesetConfigs &ruleset_list, std::vector<RulesetContent> &ruleset_content_array ,std::string proxyRuleset)
 {
     eraseElements(ruleset_content_array);
     std::string rule_group, rule_url, rule_url_typed, interval;
     RulesetContent rc;
 
-    std::string proxy = parseProxy(global.proxyRuleset);
+    std::string proxy = parseProxy(proxyRuleset);
 
     for(RulesetConfig &x : ruleset_list)
     {
