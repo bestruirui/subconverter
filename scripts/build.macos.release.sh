@@ -14,16 +14,15 @@ brew reinstall rapidjson zlib pcre2 pkgconfig
 git clone https://github.com/jbeder/yaml-cpp --depth=1
 cd yaml-cpp
 cmake -DCMAKE_BUILD_TYPE=Release -DYAML_CPP_BUILD_TESTS=OFF -DYAML_CPP_BUILD_TOOLS=OFF . > /dev/null
-make -j6 > /dev/null
+make -j8 > /dev/null
 sudo make install > /dev/null
 cd ..
 
-git clone --no-checkout https://github.com/ftk/quickjspp.git
+git clone https://github.com/ftk/quickjspp
 cd quickjspp
-git fetch origin 0c00c48895919fc02da3f191a2da06addeb07f09
-git checkout 0c00c48895919fc02da3f191a2da06addeb07f09
+git reset --hard 0c00c48895919fc02da3f191a2da06addeb07f09
 cmake -DCMAKE_BUILD_TYPE=Release .
-make quickjs -j6 > /dev/null
+make quickjs -j8 > /dev/null
 sudo install -d /usr/local/lib/quickjs/
 sudo install -m644 quickjs/libquickjs.a /usr/local/lib/quickjs/
 sudo install -d /usr/local/include/quickjs/
@@ -35,7 +34,7 @@ git clone https://github.com/PerMalmberg/libcron --depth=1
 cd libcron
 git submodule update --init
 cmake -DCMAKE_BUILD_TYPE=Release .
-make libcron -j6
+make libcron -j8
 sudo install -m644 libcron/out/Release/liblibcron.a /usr/local/lib/
 sudo install -d /usr/local/include/libcron/
 sudo install -m644 libcron/include/libcron/* /usr/local/include/libcron/
@@ -46,23 +45,13 @@ cd ..
 git clone https://github.com/ToruNiina/toml11 --branch="v4.3.0" --depth=1
 cd toml11
 cmake -DCMAKE_CXX_STANDARD=11 .
-sudo make install -j6 > /dev/null
+sudo make install -j8 > /dev/null
 cd ..
 
 cmake -DCMAKE_BUILD_TYPE=Release .
-make -j6
+make -j8
 rm subconverter
 # shellcheck disable=SC2046
-c++ -Xlinker -unexported_symbol -Xlinker "*" -o base/subconverter -framework CoreFoundation -framework Security $(find CMakeFiles/subconverter.dir/src/ -name "*.o") "$(brew --prefix zlib)/lib/libz.a" "$(brew --prefix pcre2)/lib/libpcre2-8.a" $(find . -name "*.a") -lcurl -O3
-
-python -m ensurepip
-sudo python -m pip install gitpython
-python scripts/update_rules.py -c scripts/rules_config.conf
-
-cd base
+c++ -Xlinker -unexported_symbol -Xlinker "*" -o subconverter -framework CoreFoundation -framework Security $(find CMakeFiles/subconverter.dir/src/ -name "*.o") "$(brew --prefix zlib)/lib/libz.a" "$(brew --prefix pcre2)/lib/libpcre2-8.a" $(find . -name "*.a") -lcurl -O3
 chmod +rx subconverter
-chmod +r ./*
-cd ..
-mv base subconverter
-
 set +xe

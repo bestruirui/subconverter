@@ -1197,9 +1197,9 @@ int loadExternalTOML(toml::value &root, ExternalConfig &ext)
     return 0;
 }
 
-int loadExternalConfig(std::string &path, ExternalConfig &ext)
+int loadExternalConfig(std::string &path, ExternalConfig &ext,std::string &proxy)
 {
-    std::string base_content, proxy = parseProxy(global.proxyConfig), config = fetchFile(path, proxy, global.cacheConfig);
+    std::string base_content, config = fetchFile(path, proxy, global.cacheConfig);
     if(render_template(config, *ext.tpl_args, base_content, global.templatePath) != 0)
         base_content = config;
 

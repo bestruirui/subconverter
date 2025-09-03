@@ -67,6 +67,7 @@ const std::vector<UAProfile> UAMatchList = {
     {"ClashX Pro", "", "", "clash", true},
     {"ClashX", "\\/([0-9.]+)", "0.13", "clash", true},
     {"Clash", "", "", "clash", true},
+    {"mihomo", "", "", "clash", true},
     {"Kitsunebi", "", "", "v2ray"},
     {"Loon", "", "", "loon"},
     {"Pharos", "", "", "mixed"},
@@ -78,7 +79,6 @@ const std::vector<UAProfile> UAMatchList = {
     {"Surfboard", "", "", "surfboard"},
     {"Surge", "\\/([0-9.]+).*x86", "906", "surge", false, 4}, /// Surge for Mac (supports VMess)
     {"Surge", "\\/([0-9.]+).*x86", "368", "surge", false, 3},
-    /// Surge for Mac (supports new rule types and Shadowsocks without plugin)
     {"Surge", "\\/([0-9.]+)", "1419", "surge", false, 4}, /// Surge iOS 4 (first version)
     {"Surge", "\\/([0-9.]+)", "900", "surge", false, 3}, /// Surge iOS 3 (approx)
     {"Surge", "", "", "surge", false, 2}, /// any version of Surge as fallback
@@ -330,6 +330,7 @@ std::string subconverter(RESPONSE_CALLBACK_ARGS) {
         readConf();
 
     /// string values
+    std::string argSubProxy = getUrlArg(argument, "sub_proxy"),argConfigProxy = getUrlArg(argument, "config_proxy");
     std::string argUrl = getUrlArg(argument, "url");
     std::string argGroupName = getUrlArg(argument, "group"), argUploadPath = getUrlArg(argument, "upload_path");
     std::string argIncludeRemark = getUrlArg(argument, "include"), argExcludeRemark = getUrlArg(argument, "exclude");
@@ -419,8 +420,7 @@ std::string subconverter(RESPONSE_CALLBACK_ARGS) {
     tpl_args.global_vars = global.templateVars;
     tpl_args.request_params = req_arg_map;
 
-    /// check for proxy settings
-    std::string proxy = parseProxy(global.proxySubscription);
+
 
     /// check other flags
     ext.authorized = authorized;
@@ -458,6 +458,8 @@ std::string subconverter(RESPONSE_CALLBACK_ARGS) {
     if (!argExpandRulesets)
         ext.managed_config_prefix = global.managedConfigPrefix;
 
+    std::string   proxy = parseProxy(argConfigProxy);
+
     /// load external configuration
     if (argExternalConfig.empty())
         argExternalConfig = global.defaultExtConfig;
@@ -466,7 +468,7 @@ std::string subconverter(RESPONSE_CALLBACK_ARGS) {
         writeLog(0, "External configuration file provided. Loading...", LOG_LEVEL_INFO);
         ExternalConfig extconf;
         extconf.tpl_args = &tpl_args;
-        if (loadExternalConfig(argExternalConfig, extconf) == 0) {
+        if (loadExternalConfig(argExternalConfig, extconf,proxy) == 0) {
             if (!ext.nodelist) {
                 checkExternalBase(extconf.sssub_rule_base, lSSSubBase);
                 if (!lSimpleSubscription) {
@@ -558,6 +560,7 @@ std::string subconverter(RESPONSE_CALLBACK_ARGS) {
     std::vector<Proxy> nodes, insert_nodes;
     int groupID = 0;
 
+    proxy = parseProxy(argSubProxy);
     parse_settings parse_set;
     parse_set.proxy = &proxy;
     parse_set.exclude_remarks = &lExcludeRemarks;
@@ -693,7 +696,7 @@ std::string subconverter(RESPONSE_CALLBACK_ARGS) {
         managed_url = global.managedConfigPrefix + "/sub?" + joinArguments(argument);
 
     //std::cerr<<"Generate target: ";
-    proxy = parseProxy(global.proxyConfig);
+    proxy = parseProxy(argSubProxy);
     switch (hash_(argTarget)) {
         case "clash"_hash:
         case "clashr"_hash:

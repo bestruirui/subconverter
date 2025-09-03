@@ -1,5 +1,6 @@
 subconverter.exe
 .vscode
+.cache
 cmake-build-debug
 .idea
 base/cache

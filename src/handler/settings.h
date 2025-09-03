@@ -100,7 +100,7 @@ struct ExternalConfig
 extern Settings global;
 
 int importItems(string_array &target, bool scope_limit = true);
-int loadExternalConfig(std::string &path, ExternalConfig &ext);
+int loadExternalConfig(std::string &path, ExternalConfig &ext,std::string &proxy);
 //template <class T, class... U>
 //void find_if_exist(const toml::value &v, const toml::key &k, T& target, U&&... args)
 //{
